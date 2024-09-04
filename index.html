@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris</title>
+    <script src="tablero.js"></script>
+    <script src="tetrimino.js"></script>
+    <style>
+        body{
+            background-color: rgba(127, 208, 255, 0.459);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 96vh;
+        }
+        canvas{
+            filter: drop-shadow(15px 15px 1.5em #3972a0aa);
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.min.js"></script>
+</head>
+<body>
+    <script>
+        const MARGEN_TABLERO = 10
+        let regulador_velocidad_teclas = 0
+        let velocidad_caida = 0
+        let puntaje = 0
+
+        setInterval(()=>{
+            if(millis()-velocidad_caida < 200){
+                return
+            }
+            velocidad_caida = millis()
+            tetrimino.moverAbajo()
+        }, 500)
+
+        function setup(){
+            createCanvas(300, 350)
+            tablero = new Tablero()
+            crearMapeoBaseTetrimino()
+            tetrimino = new Tetrimino()
+            resizeCanvas(
+                tablero.ancho+2*MARGEN_TABLERO, 
+                tablero.alto+2*MARGEN_TABLERO+tablero.lado_celda
+            )
+        }
+
+        function draw(){
+            clear()
+            dibujarPuntaje()
+            tablero.dibujar()
+            tetrimino.dibujar()
+            keyEventsTetris()
+        }
+
+        function dibujarPuntaje(){
+            push()
+            strokeWeight(2.5)
+            stroke("black")
+            fill("white")
+            text(`Puntaje: ${puntaje}`, tablero.position.x, tablero.position.y-10)
+            pop()
+        }
+
+        function keyEventsTetris(){
+            if (millis() - regulador_velocidad_teclas < 150){
+                return
+            }
+            regulador_velocidad_teclas = millis()
+
+            if (keyIsDown(RIGHT_ARROW)){
+                tetrimino.moverDerecha()
+                velocidad_caida = millis()
+            }
+            if (keyIsDown(LEFT_ARROW)){
+                tetrimino.moverIzquierda()
+                velocidad_caida = millis()
+            }
+            if (keyIsDown(DOWN_ARROW)){
+                tetrimino.moverAbajo()
+                velocidad_caida = millis()
+            }
+            if (keyIsDown(UP_ARROW)){
+                tetrimino.girar()
+                velocidad_caida = millis()
+            }
+            if (keyIsDown(32)){
+                tetrimino.ponerAbajo()
+                velocidad_caida = millis()
+            }
+        }
+    </script>
+</body>
+</html>
